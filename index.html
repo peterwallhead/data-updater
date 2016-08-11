@@ -15,17 +15,25 @@
 
         var realtimeData = getData($('#realtime'));
 
+
         function getData(dataBlock) {
+
             //Defines where the data comes from within the source json
-            var blocks = {"realtime": {"dataTotal":"data.data[0].active_visitors"}};
+            var blocks = { 
+
+                realtime : function(data) {
+                    return data.data[0].active_visitors;
+                }
+
+            };
 
             var dataName = $(dataBlock).data('block');
             var dataUrl = $(dataBlock).data('source');
             var dataRefreshTime = parseInt($(dataBlock).data('refresh'))*1000;
-            var dataBlockRender = blocks[dataName]["dataTotal"];
 
             $.getJSON(dataUrl, function(data) {
-                displayData(dataName, data.data[0].active_visitors);
+                var dataBlockRender = blocks[dataName](data);
+                displayData(dataName, dataBlockRender);
             });
 
             //Refreshes the data
