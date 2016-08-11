@@ -1,0 +1,46 @@
+<div id="realtime"
+  data-block="realtime"
+  data-source="https://analytics.usa.gov/data/live/realtime.json"
+  data-refresh="15">
+  <h2 id="current_visitors" class="data">...</h2>
+  <div class="chart_subtitle">people on government websites now</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+
+<script type="text/javascript">
+
+    var dataUpdater = (function() {
+        console.log('Updater is go!');
+
+        var realtimeData = getData($('#realtime'));
+
+        function getData(dataBlock) {
+            //Defines where the data comes from within the source json
+            var blocks = {"realtime": {"dataTotal":"data.data[0].active_visitors"}};
+
+            var dataName = $(dataBlock).data('block');
+            var dataUrl = $(dataBlock).data('source');
+            var dataRefreshTime = parseInt($(dataBlock).data('refresh'))*1000;
+            var dataBlockRender = blocks[dataName]["dataTotal"];
+
+            $.getJSON(dataUrl, function(data) {
+                displayData(dataName, data.data[0].active_visitors);
+            });
+
+            //Refreshes the data
+            setTimeout(function(){ getData(dataBlock)}, dataRefreshTime);
+        };
+
+        function displayData(dataBlockId, data) {
+            $('#'+dataBlockId+' .data').text(data);
+        }
+    });
+
+    $(document).ready(function() {
+
+        var updater = new dataUpdater();
+
+    });
+
+</script>
